@@ -40,7 +40,7 @@ void SetCurPos(const COORD *Pos);
 void PrintGauss(double *Matr, double *Vect, int N);
 void InitGauss3(double *Matr, double *Vect, int N);
 void InitGauss5(double *Matr, double *Vect, int N);
-void Gauss(double *Matr, double *Vect, int N);
+int Gauss(double *Matr, double *Vect, int N);
 
 int main()
 {
@@ -56,7 +56,11 @@ int shell()
 	InitGauss5(M, V, N);
 	PrintGauss(M, V, N);
 	Pause();
-	Gauss(M, V, N);
+	if (Gauss(M, V, N))
+	{
+		printf_s(" Система линейно зависимая!");
+		return 1;
+	}
 	PrintGauss(M, V, N);
 	//Pause();
 	free(M);
@@ -65,17 +69,42 @@ int shell()
 	return 0;
 }
 
-void Gauss(double *Matr, double *Vect, int N)
+int Gauss(double *Matr, double *Vect, int N)
 {
 	int i, j, k;
 	double A, B;
 
 	for(i=0; i<N; i++)
-	{
-		Pos.Y=StartPos.Y + i;
-		A = *(Matr + N*i + i);
+	{// вертикальный перебор, построчный
+		Pos.Y=StartPos.Y + i;//обновление позиции курсора
+		A = *(Matr + N*i + i);// запоминаем значение коэфф-та на главной диагонали(слева в строке нули)
+		if (A == 0){// если он РАВЕН НУЛЮ! (что нам мешает вобще то)...
+			
+			for (k = i+1; k < N; k++)
+			{// ...ищем строку с ненулевым коэффициэнтом Matr[k][i]...
+				if (*(Matr + N*k + i) > 0.001 || *(Matr + N*k + i) < -0.001)
+				{//...и если нашли...
+					double X;
+					for (int jj = i; jj < N; jj++)
+					{// переставляем строки местами
+						X = *(Matr + N*i + jj);
+						*(Matr + N*i + jj) = *(Matr + N*k + jj);
+						*(Matr + N*k + jj) = X;
+					}
+					// и переставляем значения в векторе
+					X = Vect[i];
+					Vect[i] = Vect[k];
+					Vect[k] = X;
+					break;// выходим из цикла поиска ненулевого
+				}
+			}
+			if (k == N)
+			{// не найдена строка с ненулевым элементом Matr[k][i]!!!
+				return 1;
+			}
+		}
 		for(j=i; j<N; j++)
-		{
+		{//горизонтальный перебор столбиков ;-)
 			*(Matr + N*i + j) = *(Matr + N*i + j)/A;
 			
 			Pos.X = StartPos.X + j*10 - 1;
@@ -138,6 +167,8 @@ void Gauss(double *Matr, double *Vect, int N)
 			Vect[j] = Vect[j] - *(Matr + N*i + i) * Vect[i];
 		}
 	}
+
+	return 0;
 }
 
 void Preset()
