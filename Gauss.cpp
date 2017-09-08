@@ -199,9 +199,9 @@ void PrintGauss(double *Matr, double *Vect, int N)
 		for(j=0; j<N; j++)
 		{
 			Pos.X = StartPos.X + j*10;
-			if(*(Matr + 3*i + j)<0) Pos.X--;
+			if(*(Matr + N*i + j)<0) Pos.X--;
 			SetCurPos(&Pos);
-			printf("%.2f", *(Matr + 3*i + j));
+			printf("%.2f", *(Matr + N*i + j));
 		}
 		Pos.X = StartPos.X + j*10;
 		if(Vect[i]<0) Pos.X--;
@@ -218,10 +218,10 @@ void InitGauss3(double *Matr, double *Vect, int N)
 							{1.0, 4.0, -1.0}};
 	double Vector[3]={1.0, 1.0, 2.0 };
 
-	for(i=0; i<3; i++)
+	for(i=0; i<N; i++)
 	{
 		Vect[i]=Vector[i];
-		for(j=0; j<3; j++) *(Matr + 3*i + j)=Matrix[i][j];
+		for(j=0; j<N; j++) *(Matr + N*i + j)=Matrix[i][j];
 		
 	}
 }
@@ -239,7 +239,7 @@ void InitGauss5(double *Matr, double *Vect, int N)
 	for (i = 0; i<N; i++)
 	{
 		Vect[i] = Vector[i];
-		for (j = 0; j<3; j++) *(Matr + 3 * i + j) = Matrix[i][j];
+		for (j = 0; j<N; j++) *(Matr + N * i + j) = Matrix[i][j];
 
 	}
 }
